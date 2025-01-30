@@ -14,7 +14,9 @@
 <script>
     document.getElementById('send-data').addEventListener('click',()=> {
     let tg = window.Telegram.WebApp
-    tg.SendData(tg.InitDataUnsafe.user.id)
+    const user = tg.InitDataUnsafe.user.id
+        alert(`(${user})`);
+        tg.sendData(user);
 
     }); 
 
