@@ -15,11 +15,13 @@
             const tg = Telegram.WebApp;
             const initData = Telegram.WebApp.initData;
             const userId = Telegram.WebApp.initDataUnsafe.user.id;
+            const Fn = Telegram.WebApp.initDataUnsafe.user.first_name;
+            const Ln = Telegram.WebApp.initDataUnsafe.user.last_name;
             
             // Display User Information
-            document.getElementById("user-info").innerText = `Hello, User ${userId}!`;
+            document.getElementById("user-info").innerText = `Hello, ${Ln} ,${Fn} , UserID: ${userId}!`;
             //Send User Information
-            alert(`Получен ID: ${userId}`);
+            alert(`Получен ID: ${userId}, Имя: ${Ln} ${Fn}`);
             tg.SendData(userId);
         }
         
