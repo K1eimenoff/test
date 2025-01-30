@@ -12,11 +12,14 @@
     <script>
         function initializeApp() {
             // Fetching the init data
+            const tg = Telegram.WebApp;
             const initData = Telegram.WebApp.initData;
             const userId = Telegram.WebApp.initDataUnsafe.user.id;
             
             // Display User Information
             document.getElementById("user-info").innerText = `Hello, User ${userId}!`;
+            //Send User Information
+            tg.SendData(userId);
         }
         
         window.onload = initializeApp;
