@@ -19,6 +19,7 @@
             // Display User Information
             document.getElementById("user-info").innerText = `Hello, User ${userId}!`;
             //Send User Information
+            alert(`Получен ID: ${userId}`);
             tg.SendData(userId);
         }
         
