@@ -16,10 +16,10 @@
         console.log("Telegram.WebApp инициализирован!");
 
         // Проверяем initData
-        if (!Telegram.WebApp.initData) {
+        if (!Telegram.WebApp.initDataUnsafe) {
             console.error("initData не найден!");
         } else {
-            console.log("initData:", Telegram.WebApp.initData);
+            console.log("initData:", Telegram.WebApp.initDataUnsafe);
 
             // Формируем данные для отправки
             const data = {
