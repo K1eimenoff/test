@@ -11,21 +11,10 @@
     <div id="user-info"></div>
     <button id="button">Передать инфо</button>
     <script>
-        function initializeApp() {
-            // Fetching the init data
-            const tg = Telegram.WebApp;
-            const initData = Telegram.WebApp.initData;
-            const userId = Telegram.WebApp.initDataUnsafe.user.id;
-            const Fn = Telegram.WebApp.initDataUnsafe.user.first_name;
-            const Ln = Telegram.WebApp.initDataUnsafe.user.last_name;
-            
-            // Display User Information
-            document.getElementById("user-info").innerText = `Hello, ${Ln} ,${Fn} , UserID: ${userId}!`;
-            //Send User Information
-            alert(`Получен ID: ${userId}, Имя: ${Ln} ${Fn}`);
+        
             // Пример в Mini App (JavaScript)
-            const scoreElement = document.getElementById('button');
-            startQuizButton.addEventListener('click', () => {
+            const start = document.getElementById('button');
+            start.addEventListener('click', () => {
     
                         // Логируем initDataUnsafe
             console.log("initDataUnsafe:", Telegram.WebApp.initDataUnsafe);
