@@ -150,16 +150,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function SentToTelegram(){
    
-   
+   let data = {
+       userId,
+       FirstName,
+       LastName,
+       userData
+       
+   };
 
     // Данные пользователя
-    tg.sendData(JSON.stringify({ user_id: userId,
-                               first_name: FirstName,
-                               last_name: LastName,
-                               name: document.getElementById('name').value,
-                                company: document.getElementById('company').value,
-                                phone: document.getElementById('phone').value,
-                                score: score}));
+    tg.sendData(JSON.stringify(data));
         
     
 }
