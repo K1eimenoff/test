@@ -13,7 +13,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const FirstName = tg.initDataUnsafe.user?.first_name;
     const LastName = tg.initDataUnsafe.user?.last_name;
 
-    console.log("Данные получены:", userId , FirstName , LastName);}
+    console.log("Данные получены:", userId , FirstName , LastName);
 
     let questions = [];
     let currentSection = '';
