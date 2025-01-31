@@ -10,31 +10,33 @@
     <h1>Welcome to My Telegram Mini App</h1>
     <div id="user-info"></div>
     <button id="button">Передать инфо</button>
-    <script>
-        document.addEventListener("DOMContentLoaded", () => {
-    if (window.Telegram && Telegram.WebApp) {
-        console.log("Telegram.WebApp инициализирован!");
-
-        // Проверяем initData
-        if (!Telegram.WebApp.initDataUnsafe) {
-            console.error("initData не найден!");
-        } else {
-            console.log("initData:", Telegram.WebApp.initDataUnsafe);
-
-            // Формируем данные для отправки
-            const data = {
-                user_id: Telegram.WebApp.initDataUnsafe.user?.id,
-                message: "Hello from Mini App!"
-            };
-
-            // Отправляем данные в бота
-            Telegram.WebApp.sendData(JSON.stringify(data));
-        }
-    } else {
-        console.error("Telegram.WebApp не найден!");
-    }
-});
-       
-    </script>
+    
 </body>
+    <script>
+    document.addEventListener("DOMContentLoaded", () => {
+    // Ждем инициализации Telegram.WebApp
+    const waitForTelegram = setInterval(() => {
+        if (window.Telegram && Telegram.WebApp) {
+            clearInterval(waitForTelegram);
+            console.log("Telegram.WebApp инициализирован!");
+
+            // Проверяем initDataUnsafe
+            if (!Telegram.WebApp.initDataUnsafe) {
+                console.error("initDataUnsafe не найден!");
+            } else {
+                console.log("initDataUnsafe:", Telegram.WebApp.initDataUnsafe);
+
+                // Формируем данные для отправки
+                const data = {
+                    user_id: Telegram.WebApp.initDataUnsafe.user?.id,
+                    message: "Hello from Mini App!"
+                };
+
+                // Отправляем данные в бота
+                Telegram.WebApp.sendData(JSON.stringify(data));
+            }
+        }
+    }, 100);
+});
+    </script>
 </html>
