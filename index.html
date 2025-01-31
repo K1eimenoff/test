@@ -27,17 +27,23 @@
             const scoreElement = document.getElementById('button');
             startQuizButton.addEventListener('click', () => {
     
-            const userData = {
-            user_id: Telegram.WebApp.initDataUnsafe.user?.id,
-            name: "Alice",
-            age: 25,
-            preferences: { theme: "dark", notifications: true }
-                
-};
+                        // Логируем initDataUnsafe
+            console.log("initDataUnsafe:", Telegram.WebApp.initDataUnsafe);
+            
+            // Формируем данные для отправки
+            const data = {
+                user_id: Telegram.WebApp.initDataUnsafe.user?.id,
+                message: "Hello from Mini App!"
+            };
+            
+            // Логируем данные перед отправкой
+            console.log("Данные для отправки:", data);
+            
+            // Отправляем данные в бота
+            Telegram.WebApp.sendData(JSON.stringify(data));
                 });
 
-            // Отправка данных в бота
-            Telegram.WebApp.sendData(JSON.stringify(userData));
+        
         }
         
         window.onload = initializeApp;
