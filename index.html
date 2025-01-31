@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Квиз</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="app">
+        <!-- Шаг 1: Ввод данных пользователя -->
+        <div id="user-info">
+            <h1>Введите ваши данные</h1>
+            <input type="text" id="name" placeholder="Имя">
+            <input type="text" id="workplace" placeholder="Место работы">
+            <input type="text" id="phone" placeholder="Номер телефона">
+            <button id="start-quiz">Начать квиз</button>
+        </div>
+
+        <!-- Шаг 2: Выбор раздела -->
+        <div id="quiz-section" style="display: none;">
+            <h1>Выберите раздел</h1>
+            <div id="section-buttons"></div> <!-- Кнопки для выбора раздела -->
+        </div>
+
+        <!-- Шаг 3: Вопросы квиза -->
+        <div id="quiz" style="display: none;">
+            <h1 id="question"></h1>
+            <div id="options"></div>
+        </div>
+
+        <!-- Шаг 4: Результаты -->
+        <div id="result" style="display: none;">
+            <h1>Результат</h1>
+            <p id="score"></p>
+        </div>
+    </div>
+    <script src="script.js"></script>
+    <!-- <script src="https://telegram.org/js/telegram-web-app.js?56"></script>-->
+</body>
+</html>
