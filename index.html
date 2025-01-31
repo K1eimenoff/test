@@ -11,28 +11,29 @@
     <div id="user-info"></div>
     <button id="button">Передать инфо</button>
     <script>
-        
-            // Пример в Mini App (JavaScript)
-            const start = document.getElementById('button');
-            start.addEventListener('click', () => {
-    
-                        // Логируем initDataUnsafe
-            console.log("initDataUnsafe:", Telegram.WebApp.initDataUnsafe);
-            
+        document.addEventListener("DOMContentLoaded", () => {
+    if (window.Telegram && Telegram.WebApp) {
+        console.log("Telegram.WebApp инициализирован!");
+
+        // Проверяем initData
+        if (!Telegram.WebApp.initData) {
+            console.error("initData не найден!");
+        } else {
+            console.log("initData:", Telegram.WebApp.initData);
+
             // Формируем данные для отправки
             const data = {
                 user_id: Telegram.WebApp.initDataUnsafe.user?.id,
                 message: "Hello from Mini App!"
             };
-            console.log("initData:", Telegram.WebApp.initData);
-            // Логируем данные перед отправкой
-            console.log("Данные для отправки:", data);
-            
+
             // Отправляем данные в бота
             Telegram.WebApp.sendData(JSON.stringify(data));
-                });
-
-        
+        }
+    } else {
+        console.error("Telegram.WebApp не найден!");
+    }
+});
        
     </script>
 </body>
