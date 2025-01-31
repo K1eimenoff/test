@@ -22,7 +22,16 @@
             document.getElementById("user-info").innerText = `Hello, ${Ln} ,${Fn} , UserID: ${userId}!`;
             //Send User Information
             alert(`Получен ID: ${userId}, Имя: ${Ln} ${Fn}`);
-            tg.SendData(userId);
+            // Пример в Mini App (JavaScript)
+            const userData = {
+            user_id: Telegram.WebApp.initDataUnsafe.user?.id,
+            name: "Alice",
+            age: 25,
+            preferences: { theme: "dark", notifications: true }
+};
+
+            // Отправка данных в бота
+            Telegram.WebApp.sendData(JSON.stringify(userData));
         }
         
         window.onload = initializeApp;
