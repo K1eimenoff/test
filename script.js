@@ -9,17 +9,18 @@ document.addEventListener('DOMContentLoaded', () => {
     const answersDiv = document.getElementById('answers');
     const scoreDiv = document.getElementById('score');
     const tg = window.Telegram.WebApp;
-    const userId = tg.initDataUnsafe.user?.id;
-    const FirstName = tg.initDataUnsafe.user?.first_name;
-    const LastName = tg.initDataUnsafe.user?.last_name;
-
-    console.log("Данные получены:", userId , FirstName , LastName);
+    
 
     let questions = [];
     let currentSection = '';
     let currentQuestionIndex = 0;
     let score = 0;
     let userData = {};
+    let userId = tg.initDataUnsafe.user?.id;
+    let FirstName = tg.initDataUnsafe.user?.first_name;
+    let LastName = tg.initDataUnsafe.user?.last_name;
+
+    console.log("Данные получены:", userId , FirstName , LastName);
     
 
     
