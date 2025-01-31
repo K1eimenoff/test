@@ -130,10 +130,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function showResult() {
+        SentToTelegram();
         sectionSelect.style.display = 'none';
         result.style.display = 'block';
         scoreDiv.textContent = `Ваш результат: ${score} из ${questions.length}`;
-        SentToTelegram();
     }
 
     function SentToTelegram(){
