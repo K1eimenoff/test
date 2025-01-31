@@ -141,12 +141,12 @@ document.addEventListener('DOMContentLoaded', () => {
     let tg = window.Telegram.WebApp;
 
     // Данные пользователя
-    tg.sendData(JSON.stringify({ user_id: tg.initDataUnsafe.user.id,
-                               first_name: tg.initDataUnsafe.user.first_name,
-                               last_name: tg.initDataUnsafe.user.last_name,
-                               ///name: document.getElementById('name').value,
-                                ///company: document.getElementById('company').value,
-                                ///phone: document.getElementById('phone').value,
+    tg.sendData(JSON.stringify({ user_id: tg.initDataUnsafe.user?.id,
+                               first_name: tg.initDataUnsafe.user?.first_name,
+                               last_name: tg.initDataUnsafe.user?.last_name,
+                               name: document.getElementById('name').value,
+                                company: document.getElementById('company').value,
+                                phone: document.getElementById('phone').value,
                                 score: score}));
         
     
