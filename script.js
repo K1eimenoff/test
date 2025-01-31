@@ -131,11 +131,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    function showResult() {
-        sectionSelect.style.display = 'none';
-        result.style.display = 'block';
-        scoreDiv.textContent = `Ваш результат: ${score} из ${questions.length}`;
-    }
+
 
     function showResult() {
         SentToTelegram();
