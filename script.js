@@ -15,6 +15,8 @@ document.addEventListener('DOMContentLoaded', () => {
     let score = 0;
     let userData = {};
 
+    
+
     startQuizButton.addEventListener('click', () => {
         userData.name = document.getElementById('name').value;
         userData.company = document.getElementById('company').value;
@@ -27,6 +29,12 @@ document.addEventListener('DOMContentLoaded', () => {
         } else {
             alert('Пожалуйста, заполните все поля.');
         }
+
+    if (!Telegram.WebApp.initDataUnsafe) {
+                console.error("initDataUnsafe не найден!");
+            } else {
+                console.log("initDataUnsafe:", Telegram.WebApp.initDataUnsafe);
+        
     });
 
     function loadQuestions() {
