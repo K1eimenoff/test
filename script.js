@@ -33,7 +33,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!Telegram.WebApp.initDataUnsafe) {
                 console.error("initDataUnsafe не найден!");
             } else {
-                console.log("initDataUnsafe:", Telegram.WebApp.initDataUnsafe);
+                console.log("initDataUnsafe:", Telegram.WebApp.initDataUnsafe);}
         
     });
 
