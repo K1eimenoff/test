@@ -8,6 +8,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const questionDiv = document.getElementById('question');
     const answersDiv = document.getElementById('answers');
     const scoreDiv = document.getElementById('score');
+    const tg = window.Telegram.WebApp;
+    const userId = tg.initDataUnsafe.user?.id;
+    const FirstName = tg.initDataUnsafe.user?.first_name;
+    const LastName = tg.initDataUnsafe.user?.last_name;
 
     let questions = [];
     let currentSection = '';
@@ -142,12 +146,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function SentToTelegram(){
    
-    let tg = window.Telegram.WebApp;
+   
 
     // Данные пользователя
-    tg.sendData(JSON.stringify({ user_id: tg.initDataUnsafe.user?.id,
-                               first_name: tg.initDataUnsafe.user?.first_name,
-                               last_name: tg.initDataUnsafe.user?.last_name,
+    tg.sendData(JSON.stringify({ user_id: userId,
+                               first_name: FirstName,
+                               last_name: LastName,
                                name: document.getElementById('name').value,
                                 company: document.getElementById('company').value,
                                 phone: document.getElementById('phone').value,
