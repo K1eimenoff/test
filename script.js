@@ -27,9 +27,7 @@ document.addEventListener('DOMContentLoaded', () => {
             console.log("Сырые данные из Excel:", rows);
 
             // Извлекаем уникальные разделы
-            sections = [...new Set(rows.map(row => row.section_id))].map(id => ({
-                id
-            }));
+            sections = [...new Set(rows.map(row => row.section_id))];
 
             console.log("Загруженные разделы:", sections);
         })
