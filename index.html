@@ -3,22 +3,95 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quiz</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-    <script src="quiz.js" defer></script>
+    <title>Test App</title>
+    <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+    <script src="https://telegram.org/js/telegram-web-app.js?56"></script>
 </head>
 <body>
-    <div id="form-container">
-        <h1>Введите ваши данные</h1>
-        <input type="text" id="fio" placeholder="ФИО">
-        <input type="text" id="company" placeholder="Компания">
-        <input type="text" id="phone" placeholder="Телефон">
-        <button onclick="sendUserData()">Отправить</button>
+    <h1>Тестовое приложение</h1>
+
+    <form id="userForm">
+        <label for="fio">ФИО:</label>
+        <input type="text" id="fio" name="fio" required><br><br>
+
+        <label for="company">Компания:</label>
+        <input type="text" id="company" name="company" required><br><br>
+
+        <label for="phone">Телефон:</label>
+        <input type="text" id="phone" name="phone" required><br><br>
+
+        <button type="submit">Отправить</button>
+    </form>
+
+    <div id="selectedSection" style="display: none;">
+        <h2>Вы выбрали раздел: <span id="sectionName"></span></h2>
     </div>
-    <div id="quiz-container" style="display:none;">
-        <h1 id="question-title"></h1>
-        <div id="answers"></div>
-        <button id="next-question" onclick="nextQuestion()" style="display:none;">Следующий вопрос</button>
-    </div>
+
+    <script>
+        // Получаем параметр "section" из URL
+        function getQueryParam(param) {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(param);
+        }
+
+        // Функция для чтения Excel-файла
+        async function parseExcel() {
+            const response = await fetch('questions.xlsx'); // Excel-файл должен быть в корне Mini App
+            const arrayBuffer = await response.arrayBuffer();
+            const workbook = XLSX.read(arrayBuffer, { type: 'array' });
+            const sheetName = workbook.SheetNames[0];
+            const worksheet = workbook.Sheets[sheetName];
+            const data = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+
+            // Парсим данные из Excel
+            const headers = data[0]; // Заголовки столбцов
+            const rows = data.slice(1); // Данные строк
+
+            // Находим индекс столбца "Раздел"
+            const sectionIndex = headers.indexOf("Раздел");
+
+            // Собираем уникальные значения из столбца "Раздел"
+            const uniqueSections = new Set();
+            rows.forEach(row => {
+                if (row[sectionIndex]) {
+                    uniqueSections.add(row[sectionIndex]);
+                }
+            });
+
+            return Array.from(uniqueSections);
+        }
+
+        // Отправка данных в Telegram
+        document.getElementById('userForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            // Собираем данные пользователя
+            const fio = document.getElementById('fio').value;
+            const company = document.getElementById('company').value;
+            const phone = document.getElementById('phone').value;
+
+            // Парсим Excel
+            const sections = await parseExcel();
+
+            // Формируем данные для отправки
+            const sendData = JSON.stringify({
+                fio,
+                company,
+                phone,
+                sections
+            });
+
+            // Отправляем данные в Telegram
+            window.Telegram.WebApp.sendData(sendData);
+            window.Telegram.WebApp.close();
+        });
+
+        // Проверяем, был ли передан параметр "section" в URL
+        const selectedSection = getQueryParam('section');
+        if (selectedSection) {
+            document.getElementById('selectedSection').style.display = 'block';
+            document.getElementById('sectionName').textContent = selectedSection;
+        }
+    </script>
 </body>
 </html>
