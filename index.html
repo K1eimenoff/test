@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="quiz.js" defer></script>
+</head>
+<body>
+    <div id="form-container">
+        <h1>Введите ваши данные</h1>
+        <input type="text" id="fio" placeholder="ФИО">
+        <input type="text" id="company" placeholder="Компания">
+        <input type="text" id="phone" placeholder="Телефон">
+        <button onclick="sendUserData()">Отправить</button>
+    </div>
+    <div id="quiz-container" style="display:none;">
+        <h1 id="question-title"></h1>
+        <div id="answers"></div>
+        <button id="next-question" onclick="nextQuestion()" style="display:none;">Следующий вопрос</button>
+    </div>
+</body>
+</html>
