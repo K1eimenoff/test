@@ -10,7 +10,7 @@
 <body>
     <h1>Тестовое приложение</h1>
 
-    <form id="userForm">
+    <form id="userForm" style="display: none;">
         <label for="fio">ФИО:</label>
         <input type="text" id="fio" name="fio" required><br><br>
 
@@ -23,8 +23,21 @@
         <button type="submit">Отправить</button>
     </form>
 
-    <div id="selectedSection" style="display: none;">
-        <h2>Вы выбрали раздел: <span id="sectionName"></span></h2>
+    <div id="quizContainer" style="display: none;">
+        <h2 id="questionText"></h2>
+        <form id="quizForm">
+            <label><input type="radio" name="answer" value="1"> <span id="option1"></span></label><br>
+            <label><input type="radio" name="answer" value="2"> <span id="option2"></span></label><br>
+            <label><input type="radio" name="answer" value="3"> <span id="option3"></span></label><br>
+            <label><input type="radio" name="answer" value="4"> <span id="option4"></span></label><br><br>
+            <button type="submit">Ответить</button>
+        </form>
+        <p id="resultMessage" style="color: green;"></p>
+    </div>
+
+    <div id="finalScore" style="display: none;">
+        <h2>Тест завершен!</h2>
+        <p>Ваш счет: <span id="score"></span></p>
     </div>
 
     <script>
@@ -47,8 +60,14 @@
             const headers = data[0]; // Заголовки столбцов
             const rows = data.slice(1); // Данные строк
 
-            // Находим индекс столбца "Раздел"
+            // Находим индексы столбцов
             const sectionIndex = headers.indexOf("Раздел");
+            const questionIndex = headers.indexOf("Вопрос");
+            const option1Index = headers.indexOf("Вариант1");
+            const option2Index = headers.indexOf("Вариант2");
+            const option3Index = headers.indexOf("Вариант3");
+            const option4Index = headers.indexOf("Вариант4");
+            const correctAnswerIndex = headers.indexOf("Правильный ответ");
 
             // Собираем уникальные значения из столбца "Раздел"
             const uniqueSections = new Set();
@@ -58,10 +77,85 @@
                 }
             });
 
-            return Array.from(uniqueSections);
+            return {
+                sections: Array.from(uniqueSections),
+                questions: rows.map(row => ({
+                    section: row[sectionIndex],
+                    question: row[questionIndex],
+                    options: [
+                        row[option1Index],
+                        row[option2Index],
+                        row[option3Index],
+                        row[option4Index]
+                    ],
+                    correctAnswer: row[correctAnswerIndex]
+                }))
+            };
         }
 
-        // Отправка данных в Telegram
+        let currentQuestionIndex = 0;
+        let score = 0;
+
+        // Отображение текущего вопроса
+        function displayQuestion(question) {
+            document.getElementById('questionText').textContent = question.question;
+            document.getElementById('option1').textContent = question.options[0];
+            document.getElementById('option2').textContent = question.options[1];
+            document.getElementById('option3').textContent = question.options[2];
+            document.getElementById('option4').textContent = question.options[3];
+        }
+
+        // Логика теста
+        async function startQuiz(selectedSection, questions) {
+            const filteredQuestions = questions.filter(q => q.section === selectedSection);
+
+            if (filteredQuestions.length === 0) {
+                alert("В этом разделе нет вопросов.");
+                window.Telegram.WebApp.close();
+                return;
+            }
+
+            document.getElementById('quizContainer').style.display = 'block';
+
+            const quizForm = document.getElementById('quizForm');
+            const resultMessage = document.getElementById('resultMessage');
+
+            displayQuestion(filteredQuestions[currentQuestionIndex]);
+
+            quizForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+
+                // Проверяем ответ
+                const selectedOption = parseInt(document.querySelector('input[name="answer"]:checked')?.value);
+                if (selectedOption === filteredQuestions[currentQuestionIndex].correctAnswer) {
+                    score++;
+                    resultMessage.textContent = "Правильно!";
+                } else {
+                    resultMessage.textContent = "Неправильно.";
+                }
+
+                // Переходим к следующему вопросу
+                currentQuestionIndex++;
+                if (currentQuestionIndex < filteredQuestions.length) {
+                    setTimeout(() => {
+                        resultMessage.textContent = "";
+                        displayQuestion(filteredQuestions[currentQuestionIndex]);
+                    }, 1000);
+                } else {
+                    // Тест завершен
+                    document.getElementById('quizContainer').style.display = 'none';
+                    document.getElementById('finalScore').style.display = 'block';
+                    document.getElementById('score').textContent = score;
+
+                    // Отправляем счёт в бот
+                    const sendData = JSON.stringify({ score });
+                    window.Telegram.WebApp.sendData(sendData);
+                    window.Telegram.WebApp.close();
+                }
+            });
+        }
+
+        // Обработка формы пользователя
         document.getElementById('userForm').addEventListener('submit', async (e) => {
             e.preventDefault();
 
@@ -71,7 +165,7 @@
             const phone = document.getElementById('phone').value;
 
             // Парсим Excel
-            const sections = await parseExcel();
+            const { sections, questions } = await parseExcel();
 
             // Формируем данные для отправки
             const sendData = JSON.stringify({
@@ -83,14 +177,22 @@
 
             // Отправляем данные в Telegram
             window.Telegram.WebApp.sendData(sendData);
-            window.Telegram.WebApp.close();
+
+            // Показываем форму теста
+            document.getElementById('userForm').style.display = 'none';
+            const selectedSection = getQueryParam('section');
+            if (selectedSection) {
+                startQuiz(selectedSection, questions);
+            } else {
+                alert("Не выбран раздел.");
+                window.Telegram.WebApp.close();
+            }
         });
 
         // Проверяем, был ли передан параметр "section" в URL
         const selectedSection = getQueryParam('section');
-        if (selectedSection) {
-            document.getElementById('selectedSection').style.display = 'block';
-            document.getElementById('sectionName').textContent = selectedSection;
+        if (!selectedSection) {
+            document.getElementById('userForm').style.display = 'block';
         }
     </script>
 </body>
