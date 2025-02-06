@@ -4,35 +4,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Test App</title>
+    <link rel="stylesheet" href="styles.css">
     <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
     <script src="https://telegram.org/js/telegram-web-app.js?56"></script>
 </head>
 <body>
     <h1>Тестовое приложение</h1>
 
-    <form id="userForm" style="display: none;">
-        <label for="fio">ФИО:</label>
-        <input type="text" id="fio" name="fio" required><br><br>
-
-        <label for="company">Компания:</label>
-        <input type="text" id="company" name="company" required><br><br>
-
-        <label for="phone">Телефон:</label>
-        <input type="text" id="phone" name="phone" required><br><br>
-
-        <button type="submit">Отправить</button>
-    </form>
-
     <div id="quizContainer" style="display: none;">
+        <p id="resultMessageRight" class="Right"></p>
+        <p id="resultMessageWrong" class="Wrong"></p>
         <h2 id="questionText"></h2>
-        <form id="quizForm">
-            <label><input type="radio" name="answer" value="1"> <span id="option1"></span></label><br>
-            <label><input type="radio" name="answer" value="2"> <span id="option2"></span></label><br>
-            <label><input type="radio" name="answer" value="3"> <span id="option3"></span></label><br>
-            <label><input type="radio" name="answer" value="4"> <span id="option4"></span></label><br><br>
-            <button type="submit">Ответить</button>
-        </form>
-        <p id="resultMessage" style="color: green;"></p>
+        <div id="answerButtons"></div>
+        
     </div>
 
     <div id="finalScore" style="display: none;">
@@ -40,200 +24,15 @@
         <p>Ваш счет: <span id="score"></span></p>
     </div>
 
-    <script>
-        // Получаем параметр "section" из URL
-        function getQueryParam(param) {
-            const urlParams = new URLSearchParams(window.location.search);
-            return urlParams.get(param);
-        }
+    <form id="userForm" style="display: none;">
+        
+        <input type="text" id="fio" placeholder="ФИО" required>
+        <input type="text" id="company" placeholder="Компания" required>
+        <input type="text" id="phone" placeholder="Номер телефона" required>
 
-        // Функция для чтения Excel-файла
-        async function parseExcel() {
-            try {
-                const response = await fetch('questions.xlsx'); // Excel-файл должен быть в корневой директории Mini App
-                const arrayBuffer = await response.arrayBuffer();
-                const workbook = XLSX.read(arrayBuffer, { type: 'array' });
-                const sheetName = workbook.SheetNames[0];
-                const worksheet = workbook.Sheets[sheetName];
-                const data = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+        <button type="submit" class="btn">Отправить</button>
+    </form>
 
-                // Парсим данные из Excel
-                const headers = data[0]; // Заголовки столбцов
-                const rows = data.slice(1); // Данные строк
-
-                console.log("Headers:", headers); // Логирование заголовков
-                console.log("Rows:", rows); // Логирование данных строк
-
-                // Находим индексы столбцов
-                const sectionIndex = headers.indexOf("Раздел");
-                const questionIndex = headers.indexOf("Вопрос");
-                const option1Index = headers.indexOf("Вариант 1");
-                const option2Index = headers.indexOf("Вариант 2");
-                const option3Index = headers.indexOf("Вариант 3");
-                const option4Index = headers.indexOf("Вариант 4");
-                const correctAnswerIndex = headers.indexOf("Правильный ответ");
-
-                console.log("Indices:", {
-                    sectionIndex,
-                    questionIndex,
-                    option1Index,
-                    option2Index,
-                    option3Index,
-                    option4Index,
-                    correctAnswerIndex
-                }); // Логирование индексов
-
-                // Собираем уникальные значения из столбца "Раздел"
-                const uniqueSections = new Set();
-                rows.forEach(row => {
-                    if (row[sectionIndex]) {
-                        uniqueSections.add(row[sectionIndex]);
-                    }
-                });
-
-                return {
-                    sections: Array.from(uniqueSections),
-                    questions: rows.map(row => ({
-                        section: row[sectionIndex]?.toString().trim(),
-                        question: row[questionIndex]?.toString().trim(),
-                        options: [
-                            row[option1Index]?.toString().trim(),
-                            row[option2Index]?.toString().trim(),
-                            row[option3Index]?.toString().trim(),
-                            row[option4Index]?.toString().trim()
-                        ],
-                        correctAnswer: parseInt(row[correctAnswerIndex]?.toString().trim()) || null
-                    }))
-                };
-            } catch (error) {
-                console.error("Ошибка при чтении Excel-файла:", error);
-                alert("Не удалось загрузить вопросы. Проверьте файл data.xlsx.");
-                window.Telegram.WebApp.close();
-            }
-        }
-
-        let currentQuestionIndex = 0;
-        let score = 0;
-
-        // Отображение текущего вопроса
-        function displayQuestion(question) {
-            console.log("Current Question:", question); // Логирование текущего вопроса
-
-            document.getElementById('questionText').textContent = question.question || "Нет вопроса";
-            document.getElementById('option1').textContent = question.options[0] || "Нет варианта";
-            document.getElementById('option2').textContent = question.options[1] || "Нет варианта";
-            document.getElementById('option3').textContent = question.options[2] || "Нет варианта";
-            document.getElementById('option4').textContent = question.options[3] || "Нет варианта";
-
-            // Очищаем предыдущие выборы
-            document.querySelectorAll('input[name="answer"]').forEach(radio => radio.checked = false);
-        }
-
-        // Логика теста
-        async function startQuiz(selectedSection, questions) {
-            const filteredQuestions = questions.filter(q => q.section === selectedSection);
-
-            if (filteredQuestions.length === 0) {
-                alert("В этом разделе нет вопросов.");
-                window.Telegram.WebApp.close();
-                return;
-            }
-
-            console.log("Filtered Questions:", filteredQuestions); // Логирование отфильтрованных вопросов
-
-            document.getElementById('quizContainer').style.display = 'block';
-
-            const quizForm = document.getElementById('quizForm');
-            const resultMessage = document.getElementById('resultMessage');
-
-            displayQuestion(filteredQuestions[currentQuestionIndex]);
-
-            quizForm.addEventListener('submit', (e) => {
-                e.preventDefault();
-
-                // Проверяем ответ
-                const selectedOption = parseInt(document.querySelector('input[name="answer"]:checked')?.value);
-                if (selectedOption === filteredQuestions[currentQuestionIndex].correctAnswer) {
-                    score++;
-                    resultMessage.textContent = "Правильно!";
-                } else {
-                    resultMessage.textContent = "Неправильно.";
-                }
-
-                // Переходим к следующему вопросу
-                currentQuestionIndex++;
-                if (currentQuestionIndex < filteredQuestions.length) {
-                    setTimeout(() => {
-                        resultMessage.textContent = "";
-                        displayQuestion(filteredQuestions[currentQuestionIndex]);
-                    }, 1000);
-                } else {
-                    // Тест завершен
-                    document.getElementById('quizContainer').style.display = 'none';
-                    document.getElementById('finalScore').style.display = 'block';
-                    document.getElementById('score').textContent = score;
-
-                    // Отправляем счёт в бот
-                    const sendData = JSON.stringify({
-                                score,
-                                section: selectedSection // Добавляем название раздела
-                            });
-                    window.Telegram.WebApp.sendData(sendData);
-                    window.Telegram.WebApp.close();
-                }
-            });
-        }
-
-        // Инициализация Mini App
-        async function initMiniApp() {
-            const selectedSection = getQueryParam('section');
-
-            if (selectedSection) {
-                // Если есть параметр "section", сразу начинаем тест
-                const { questions } = await parseExcel();
-                startQuiz(selectedSection, questions);
-            } else {
-                // Если параметра "section" нет, показываем форму пользователя
-                document.getElementById('userForm').style.display = 'block';
-            }
-        }
-
-        // Обработка формы пользователя
-        document.getElementById('userForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-
-            // Собираем данные пользователя
-            const fio = document.getElementById('fio').value;
-            const company = document.getElementById('company').value;
-            const phone = document.getElementById('phone').value;
-
-            // Парсим Excel
-            const { sections, questions } = await parseExcel();
-
-            // Формируем данные для отправки
-            const sendData = JSON.stringify({
-                fio,
-                company,
-                phone,
-                sections
-            });
-
-            // Отправляем данные в Telegram
-            window.Telegram.WebApp.sendData(sendData);
-
-            // Показываем форму теста
-            document.getElementById('userForm').style.display = 'none';
-            const selectedSection = getQueryParam('section');
-            if (selectedSection) {
-                startQuiz(selectedSection, questions);
-            } else {
-                alert("Не выбран раздел.");
-                window.Telegram.WebApp.close();
-            }
-        });
-
-        // Инициализация при загрузке страницы
-        initMiniApp();
-    </script>
+    <script src="script.js"></script>
 </body>
 </html>
