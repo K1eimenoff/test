@@ -49,48 +49,67 @@
 
         // Функция для чтения Excel-файла
         async function parseExcel() {
-            const response = await fetch('questions.xlsx'); // Excel-файл должен быть в корне Mini App
-            const arrayBuffer = await response.arrayBuffer();
-            const workbook = XLSX.read(arrayBuffer, { type: 'array' });
-            const sheetName = workbook.SheetNames[0];
-            const worksheet = workbook.Sheets[sheetName];
-            const data = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+            try {
+                const response = await fetch('questions.xlsx'); // Excel-файл должен быть в корневой директории Mini App
+                const arrayBuffer = await response.arrayBuffer();
+                const workbook = XLSX.read(arrayBuffer, { type: 'array' });
+                const sheetName = workbook.SheetNames[0];
+                const worksheet = workbook.Sheets[sheetName];
+                const data = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
 
-            // Парсим данные из Excel
-            const headers = data[0]; // Заголовки столбцов
-            const rows = data.slice(1); // Данные строк
+                // Парсим данные из Excel
+                const headers = data[0]; // Заголовки столбцов
+                const rows = data.slice(1); // Данные строк
 
-            // Находим индексы столбцов
-            const sectionIndex = headers.indexOf("Раздел");
-            const questionIndex = headers.indexOf("Вопрос");
-            const option1Index = headers.indexOf("Вариант1");
-            const option2Index = headers.indexOf("Вариант2");
-            const option3Index = headers.indexOf("Вариант3");
-            const option4Index = headers.indexOf("Вариант4");
-            const correctAnswerIndex = headers.indexOf("Правильный ответ");
+                console.log("Headers:", headers); // Логирование заголовков
+                console.log("Rows:", rows); // Логирование данных строк
 
-            // Собираем уникальные значения из столбца "Раздел"
-            const uniqueSections = new Set();
-            rows.forEach(row => {
-                if (row[sectionIndex]) {
-                    uniqueSections.add(row[sectionIndex]);
-                }
-            });
+                // Находим индексы столбцов
+                const sectionIndex = headers.indexOf("Раздел");
+                const questionIndex = headers.indexOf("Вопрос");
+                const option1Index = headers.indexOf("Вариант 1");
+                const option2Index = headers.indexOf("Вариант 2");
+                const option3Index = headers.indexOf("Вариант 3");
+                const option4Index = headers.indexOf("Вариант 4");
+                const correctAnswerIndex = headers.indexOf("Правильный ответ");
 
-            return {
-                sections: Array.from(uniqueSections),
-                questions: rows.map(row => ({
-                    section: row[sectionIndex],
-                    question: row[questionIndex],
-                    options: [
-                        row[option1Index],
-                        row[option2Index],
-                        row[option3Index],
-                        row[option4Index]
-                    ],
-                    correctAnswer: row[correctAnswerIndex]
-                }))
-            };
+                console.log("Indices:", {
+                    sectionIndex,
+                    questionIndex,
+                    option1Index,
+                    option2Index,
+                    option3Index,
+                    option4Index,
+                    correctAnswerIndex
+                }); // Логирование индексов
+
+                // Собираем уникальные значения из столбца "Раздел"
+                const uniqueSections = new Set();
+                rows.forEach(row => {
+                    if (row[sectionIndex]) {
+                        uniqueSections.add(row[sectionIndex]);
+                    }
+                });
+
+                return {
+                    sections: Array.from(uniqueSections),
+                    questions: rows.map(row => ({
+                        section: row[sectionIndex]?.toString().trim(),
+                        question: row[questionIndex]?.toString().trim(),
+                        options: [
+                            row[option1Index]?.toString().trim(),
+                            row[option2Index]?.toString().trim(),
+                            row[option3Index]?.toString().trim(),
+                            row[option4Index]?.toString().trim()
+                        ],
+                        correctAnswer: parseInt(row[correctAnswerIndex]?.toString().trim()) || null
+                    }))
+                };
+            } catch (error) {
+                console.error("Ошибка при чтении Excel-файла:", error);
+                alert("Не удалось загрузить вопросы. Проверьте файл data.xlsx.");
+                window.Telegram.WebApp.close();
+            }
         }
 
         let currentQuestionIndex = 0;
@@ -98,11 +117,16 @@
 
         // Отображение текущего вопроса
         function displayQuestion(question) {
-            document.getElementById('questionText').textContent = question.question;
-            document.getElementById('option1').textContent = question.options[0];
-            document.getElementById('option2').textContent = question.options[1];
-            document.getElementById('option3').textContent = question.options[2];
-            document.getElementById('option4').textContent = question.options[3];
+            console.log("Current Question:", question); // Логирование текущего вопроса
+
+            document.getElementById('questionText').textContent = question.question || "Нет вопроса";
+            document.getElementById('option1').textContent = question.options[0] || "Нет варианта";
+            document.getElementById('option2').textContent = question.options[1] || "Нет варианта";
+            document.getElementById('option3').textContent = question.options[2] || "Нет варианта";
+            document.getElementById('option4').textContent = question.options[3] || "Нет варианта";
+
+            // Очищаем предыдущие выборы
+            document.querySelectorAll('input[name="answer"]').forEach(radio => radio.checked = false);
         }
 
         // Логика теста
@@ -114,6 +138,8 @@
                 window.Telegram.WebApp.close();
                 return;
             }
+
+            console.log("Filtered Questions:", filteredQuestions); // Логирование отфильтрованных вопросов
 
             document.getElementById('quizContainer').style.display = 'block';
 
@@ -155,6 +181,20 @@
             });
         }
 
+        // Инициализация Mini App
+        async function initMiniApp() {
+            const selectedSection = getQueryParam('section');
+
+            if (selectedSection) {
+                // Если есть параметр "section", сразу начинаем тест
+                const { questions } = await parseExcel();
+                startQuiz(selectedSection, questions);
+            } else {
+                // Если параметра "section" нет, показываем форму пользователя
+                document.getElementById('userForm').style.display = 'block';
+            }
+        }
+
         // Обработка формы пользователя
         document.getElementById('userForm').addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -189,11 +229,8 @@
             }
         });
 
-        // Проверяем, был ли передан параметр "section" в URL
-        const selectedSection = getQueryParam('section');
-        if (!selectedSection) {
-            document.getElementById('userForm').style.display = 'block';
-        }
+        // Инициализация при загрузке страницы
+        initMiniApp();
     </script>
 </body>
 </html>
