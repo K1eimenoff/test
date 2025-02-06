@@ -174,7 +174,10 @@
                     document.getElementById('score').textContent = score;
 
                     // Отправляем счёт в бот
-                    const sendData = JSON.stringify({ score });
+                    const sendData = JSON.stringify({
+                                score,
+                                section: selectedSection // Добавляем название раздела
+                            });
                     window.Telegram.WebApp.sendData(sendData);
                     window.Telegram.WebApp.close();
                 }
