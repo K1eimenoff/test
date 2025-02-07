@@ -101,9 +101,15 @@ function handleAnswerClick(event) {
             document.getElementById('finalScore').style.display = 'block';
             document.getElementById('score').textContent = score;
 
-            const sendData = JSON.stringify({ score });
-            window.Telegram.WebApp.sendData(sendData);
-            window.Telegram.WebApp.close();
+            // Добавляем текущий раздел в отправляемые данные
+        const selectedSection = getQueryParam('section'); // Получаем текущий раздел из URL
+        const sendData = JSON.stringify({
+            score,
+            section: selectedSection // Добавляем раздел
+        });
+
+        window.Telegram.WebApp.sendData(sendData);
+        window.Telegram.WebApp.close();
         }
     }, 1000);
 }
