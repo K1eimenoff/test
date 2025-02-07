@@ -9,22 +9,28 @@
     <script src="https://telegram.org/js/telegram-web-app.js?56"></script>
 </head>
 <body>
-    <h1>Тестовое приложение</h1>
-
     <div id="quizContainer" style="display: none;">
-        <p id="resultMessageRight" class="Right"></p>
-        <p id="resultMessageWrong" class="Wrong"></p>
-        <h2 id="questionText"></h2>
+        
+        <div id="questionBox">
+            <p id="questionCounter">Вопрос  <span id="currentQuestion">1</span> из <span id="totalQuestions">10</span></p>
+            <h2 id="questionText"></h2>
+        </div>
+        <div class="box">
+        <p id="resultMessageRight"></p>
+        <p id="resultMessageWrong"></p>
+        </div>
         <div id="answerButtons"></div>
         
     </div>
 
     <div id="finalScore" style="display: none;">
-        <h2>Тест завершен!</h2>
+        <h2>Вопросы закончились!</h2>
         <p>Ваш счет: <span id="score"></span></p>
     </div>
 
     <form id="userForm" style="display: none;">
+        <h1>Заполните профиль</h1>
+        <p>Потому что-потому!</p>
         
         <input type="text" id="fio" placeholder="ФИО" required>
         <input type="text" id="company" placeholder="Компания" required>

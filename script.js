@@ -62,6 +62,11 @@ function displayQuestion(question) {
     const answerButtonsDiv = document.getElementById('answerButtons');
     answerButtonsDiv.innerHTML = '';
 
+    // Обновляем счетчик вопросов
+    const filteredQuestions = JSON.parse(localStorage.getItem('filteredQuestions'));
+    document.getElementById('currentQuestion').textContent = currentQuestionIndex + 1; // Текущий вопрос (индекс + 1)
+    document.getElementById('totalQuestions').textContent = filteredQuestions.length; // Общее количество вопросов
+
     question.options.forEach((option, index) => {
         const button = document.createElement('button');
         button.textContent = option || "Нет варианта";
@@ -100,16 +105,16 @@ function handleAnswerClick(event) {
             document.getElementById('quizContainer').style.display = 'none';
             document.getElementById('finalScore').style.display = 'block';
             document.getElementById('score').textContent = score;
-
+    
             // Добавляем текущий раздел в отправляемые данные
-        const selectedSection = getQueryParam('section'); // Получаем текущий раздел из URL
-        const sendData = JSON.stringify({
-            score,
-            section: selectedSection // Добавляем раздел
-        });
-
-        window.Telegram.WebApp.sendData(sendData);
-        window.Telegram.WebApp.close();
+            const selectedSection = getQueryParam('section'); // Получаем текущий раздел из URL
+            const sendData = JSON.stringify({
+                score,
+                section: selectedSection // Добавляем раздел
+            });
+    
+            window.Telegram.WebApp.sendData(sendData);
+            window.Telegram.WebApp.close();
         }
     }, 1000);
 }
