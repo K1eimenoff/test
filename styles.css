@@ -108,6 +108,12 @@ h2{
     align-content: center;
 }
 
+.DiscriptionBox{
+    font-size: 12px;
+    color: white;
+
+}
+
 #resultMessageRight{
     color: rgb(43, 246, 43);
     font-size: 20px;
@@ -128,6 +134,7 @@ h2{
     text-align: center;
     
 }
+
 #questionText {
     font-size: 18px;
     margin-bottom: 20px;

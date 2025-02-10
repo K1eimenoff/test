@@ -170,10 +170,7 @@ document.getElementById('userForm').addEventListener('submit', async (e) => {
     const selectedSection = getQueryParam('section');
     if (selectedSection) {
         startQuiz(selectedSection, questions);
-    } else {
-        alert("Не выбран раздел.");
-        window.Telegram.WebApp.close();
-    }
+    } 
 });
 
 
