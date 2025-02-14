@@ -122,8 +122,6 @@ async function startQuiz(selectedSection, questions) {
 
 // Инициализация Mini App
 async function initMiniApp() {
-    // Расширяем веб-приложение до полного размера экрана
-    window.Telegram.WebApp.expand();
 
     const selectedSection = getQueryParam('section');
     const { sections, questions } = await parseExcel();
