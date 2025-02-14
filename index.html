@@ -6,11 +6,16 @@
     <title>Test App</title>
     <link rel="icon" href="/icon.svg">
     <link rel="stylesheet" href="styles.css">
+    <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
     <script src="https://telegram.org/js/telegram-web-app.js?56"></script>
 </head>
 <body>
-    <image src="icon.svg" class="icon noselect"></image>
+    <div class="scoreBlock">
+    <image src="images/coin.svg" id="coinImage">    
+    <p id="score">0</p>
+    </div>
+    <image src="images/icon.svg" class="icon noselect"></image>
     <div id="quizContainer" style="display: none;">
         
         <div id="questionBox">
@@ -18,8 +23,10 @@
             <h2 id="questionText"></h2>
         </div>
         <div class="box">
-        <p id="resultMessageRight"></p>
-        <p id="resultMessageWrong"></p>
+        <image src="images/coin_animation.gif" id="resultMessageRight" style="display: none;"></image>
+        <image src="images/wrong_animation.gif" id="resultMessageWrong" style="display: none;"></image>
+        <!-- <p id="resultMessageRight"></p> 
+        <p id="resultMessageWrong"></p>-->
         </div>
         <div id="answerButtons"></div>
         

@@ -73,22 +73,24 @@ function handleAnswerClick(event) {
     const correctAnswer = filteredQuestions[currentQuestionIndex].correctAnswer;
     const resultMessageRight = document.getElementById('resultMessageRight');
     const resultMessageWrong = document.getElementById('resultMessageWrong');
+    const resultScore = document.getElementById('score');
     if (selectedOption === correctAnswer) {
         score++;
-        resultMessageRight.textContent = "Правильно!";
+        resultMessageRight.style.display = 'block';
+        resultScore.textContent = score;
     } else {
-        resultMessageWrong.textContent = "Неправильно.";
+        resultMessageWrong.style.display = 'block';
     }
     setTimeout(() => {
-        resultMessageRight.textContent = "";
-        resultMessageWrong.textContent = "";
+        resultMessageRight.style.display = 'none';
+        resultMessageWrong.style.display = 'none';
         currentQuestionIndex++;
         if (currentQuestionIndex < filteredQuestions.length) {
             displayQuestion(filteredQuestions[currentQuestionIndex]);
         } else {
             endQuiz();
         }
-    }, 1000);
+    }, 2000);
 }
 
 // Завершение теста
