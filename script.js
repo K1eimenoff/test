@@ -1,6 +1,7 @@
 let currentQuestionIndex = 0;
 let score = 0;
 let filteredQuestions = []; // Глобальная переменная для хранения отфильтрованных вопросов
+let isAnswered = false; // Флаг для отслеживания состояния вопроса
 
 // Получаем параметр "section" из URL
 function getQueryParam(param) {
@@ -48,10 +49,22 @@ function displayQuestion(question) {
     const answerButtonsDiv = document.getElementById('answerButtons');
     const currentQuestionElement = document.getElementById('currentQuestion');
     const totalQuestionsElement = document.getElementById('totalQuestions');
+    const currentSection = document.getElementById('CurrentSection');
+
+    // Сбрасываем флаг и очищаем выбранный вариант
+    isAnswered = false;
+    document.querySelectorAll('.answer-button').forEach(button => button.classList.remove('selected'));
+
+    // Очищаем кнопки
+    answerButtonsDiv.innerHTML = '';
+
+    // Устанавливаем текст вопроса
+    currentSection.textContent = question.section;
     questionText.textContent = question.question || "Нет вопроса";
-    answerButtonsDiv.innerHTML = ''; // Очищаем кнопки
     currentQuestionElement.textContent = currentQuestionIndex + 1; // Текущий вопрос
     totalQuestionsElement.textContent = filteredQuestions.length; // Общее количество вопросов
+
+    // Создаем кнопки для вариантов ответов
     question.options.forEach((option, index) => {
         const button = document.createElement('button');
         button.textContent = option || "Нет варианта";
@@ -59,31 +72,42 @@ function displayQuestion(question) {
         button.dataset.index = index + 1;
         answerButtonsDiv.appendChild(button);
     });
-    // Делегирование событий для кнопок
+
+    // Добавляем обработчик событий для кнопок
     answerButtonsDiv.addEventListener('click', handleAnswerClick);
 }
 
 // Обработка нажатия на кнопку
 function handleAnswerClick(event) {
+    if (isAnswered) return; // Если вопрос уже отвечен, игнорируем клик
+
     const selectedButton = event.target.closest('.answer-button');
     if (!selectedButton) return;
+
     const selectedOption = parseInt(selectedButton.dataset.index);
+    const correctAnswer = filteredQuestions[currentQuestionIndex].correctAnswer;
+
+    // Помечаем выбранный вариант
     document.querySelectorAll('.answer-button').forEach(button => button.classList.remove('selected'));
     selectedButton.classList.add('selected');
-    const correctAnswer = filteredQuestions[currentQuestionIndex].correctAnswer;
-    const resultMessageRight = document.getElementById('resultMessageRight');
-    const resultMessageWrong = document.getElementById('resultMessageWrong');
+
+    // Проверяем правильность ответа
     const resultScore = document.getElementById('score');
+
     if (selectedOption === correctAnswer) {
         score++;
-        resultMessageRight.style.display = 'block';
-        resultScore.textContent = score;
-    } else {
-        resultMessageWrong.style.display = 'block';
     }
+
+    // Устанавливаем флаг, что вопрос уже отвечен
+    isAnswered = true;
+
+    // Удаляем обработчик событий для кнопок, чтобы блокировать повторные нажатия
+    const answerButtonsDiv = document.getElementById('answerButtons');
+    answerButtonsDiv.removeEventListener('click', handleAnswerClick);
+
+    // Переход к следующему вопросу через 2 секунды
     setTimeout(() => {
-        resultMessageRight.style.display = 'none';
-        resultMessageWrong.style.display = 'none';
+        
         currentQuestionIndex++;
         if (currentQuestionIndex < filteredQuestions.length) {
             displayQuestion(filteredQuestions[currentQuestionIndex]);
@@ -122,7 +146,7 @@ async function startQuiz(selectedSection, questions) {
 
 // Инициализация Mini App
 async function initMiniApp() {
-
+    window.Telegram.WebApp.expand()
     const selectedSection = getQueryParam('section');
     const { sections, questions } = await parseExcel();
     if (selectedSection) {
