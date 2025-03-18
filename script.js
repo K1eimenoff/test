@@ -43,13 +43,16 @@ async function parseExcel() {
     }
 }
 
-// Отображение текущего вопроса
 function displayQuestion(question) {
+    const quizContainer = document.getElementById('quizContainer');
     const questionText = document.getElementById('questionText');
     const answerButtonsDiv = document.getElementById('answerButtons');
     const currentQuestionElement = document.getElementById('currentQuestion');
     const totalQuestionsElement = document.getElementById('totalQuestions');
     const currentSection = document.getElementById('CurrentSection');
+    const preloaderOverlay = document.getElementById('preloaderOverlay');
+
+    
 
     // Сбрасываем флаг и очищаем выбранный вариант
     isAnswered = false;
@@ -75,12 +78,12 @@ function displayQuestion(question) {
 
     // Добавляем обработчик событий для кнопок
     answerButtonsDiv.addEventListener('click', handleAnswerClick);
+
 }
 
 // Обработка нажатия на кнопку
 function handleAnswerClick(event) {
     if (isAnswered) return; // Если вопрос уже отвечен, игнорируем клик
-
     const selectedButton = event.target.closest('.answer-button');
     if (!selectedButton) return;
 
@@ -92,8 +95,6 @@ function handleAnswerClick(event) {
     selectedButton.classList.add('selected');
 
     // Проверяем правильность ответа
-    const resultScore = document.getElementById('score');
-
     if (selectedOption === correctAnswer) {
         score++;
     }
@@ -107,7 +108,6 @@ function handleAnswerClick(event) {
 
     // Переход к следующему вопросу через 2 секунды
     setTimeout(() => {
-        
         currentQuestionIndex++;
         if (currentQuestionIndex < filteredQuestions.length) {
             displayQuestion(filteredQuestions[currentQuestionIndex]);
@@ -146,7 +146,7 @@ async function startQuiz(selectedSection, questions) {
 
 // Инициализация Mini App
 async function initMiniApp() {
-    window.Telegram.WebApp.expand()
+    window.Telegram.WebApp.expand();
     const selectedSection = getQueryParam('section');
     const { sections, questions } = await parseExcel();
     if (selectedSection) {

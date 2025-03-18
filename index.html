@@ -11,15 +11,26 @@
     <script src="https://telegram.org/js/telegram-web-app.js?56"></script>
 </head>
 
-<body>
-    <div id="quizContainer" style="display: none;"> 
-            <p id="Current">Стол <span id="CurrentSection">-</span></p>       
-            <p id="questionCounter">Вопрос  <span id="currentQuestion">1</span> из <span id="totalQuestions">10</span></p>
-            <h2 id="questionText"></h2>
-            <image src="images/coin_animation.gif" id="resultMessageRight" style="display: none;"></image>
-            <image src="images/wrong_animation.gif" id="resultMessageWrong" style="display: none;"></image>
-            
-            <div id="answerButtons"></div>
+<body>  
+    <ul class="circles">
+                <li></li>
+                <li></li>
+                <li></li>
+                <li></li>
+                <li></li>
+                <li></li>
+                <li></li>
+                <li></li>
+                <li></li>
+                <li></li>
+    </ul>
+
+
+    <div id="quizContainer" style="display: none;">        
+            <p id="questionCounter">Вопрос  <span id="currentQuestion">1</span> из <span id="totalQuestions">10</span></p>    
+            <p id="Current">Стол <span id="CurrentSection">-</span></p>
+            <h2 id="questionText"></h2>         
+            <div id="answerButtons"></div>        
     </div>
 
     <div id="finalScore" style="display: none;">
@@ -37,6 +48,7 @@
     </form>
 
     <script src="script.js"></script>
+    
 </body>
 
 </html>
