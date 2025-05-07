@@ -50,9 +50,6 @@ function displayQuestion(question) {
     const currentQuestionElement = document.getElementById('currentQuestion');
     const totalQuestionsElement = document.getElementById('totalQuestions');
     const currentSection = document.getElementById('CurrentSection');
-    const preloaderOverlay = document.getElementById('preloaderOverlay');
-
-    
 
     // Сбрасываем флаг и очищаем выбранный вариант
     isAnswered = false;
@@ -67,10 +64,12 @@ function displayQuestion(question) {
     currentQuestionElement.textContent = currentQuestionIndex + 1; // Текущий вопрос
     totalQuestionsElement.textContent = filteredQuestions.length; // Общее количество вопросов
 
-    // Создаем кнопки для вариантов ответов
+    // Создаем кнопки только для непустых вариантов ответов
     question.options.forEach((option, index) => {
+        if (!option || option.trim() === "") return; // Пропускаем пустые варианты
+
         const button = document.createElement('button');
-        button.textContent = option || "Нет варианта";
+        button.textContent = option;
         button.classList.add('answer-button');
         button.dataset.index = index + 1;
         answerButtonsDiv.appendChild(button);
@@ -78,7 +77,6 @@ function displayQuestion(question) {
 
     // Добавляем обработчик событий для кнопок
     answerButtonsDiv.addEventListener('click', handleAnswerClick);
-
 }
 
 // Обработка нажатия на кнопку
