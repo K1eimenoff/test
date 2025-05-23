@@ -8,37 +8,37 @@ body {
     min-height: 100vh;
     overflow-x: hidden;
     position: relative;
-    background: linear-gradient(0deg, #850707, #fefdc4);
-    background-size: 300% 300%;
+    background: #850707; /* Fallback цвет */
 }
 
-/* Liquid Background Effect */
 .liquid-bg {
     position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
+    top: -50px;
+    left: -50px;
+    right: -50px;
+    bottom: -50px;
     z-index: 0;
     background: linear-gradient(45deg, #850707 0%, #fefdc4 100%);
     background-size: 200% 200%;
     filter: url('#liquid');
     will-change: transform;
     transform: translate3d(0, 0, 0);
+    overflow: hidden;
+    pointer-events: none;
 }
 
-/* SVG Filter for Liquid Effect (добавить в HTML) */
-/*
-<svg style="position:absolute;height:0;width:0;">
-  <filter id="liquid">
-    <feGaussianBlur in="SourceGraphic" stdDeviation="10" result="blur" />
-    <feColorMatrix in="blur" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 20 -10" result="liquid" />
-    <feComposite in="SourceGraphic" in2="liquid" operator="atop"/>
-  </filter>
-</svg>
-*/
+/* Анимация для устройств без акселерометра */
+@keyframes subtleMove {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
 
-/* Анимация фона */
+.no-sensor .liquid-bg {
+    animation: subtleMove 15s ease infinite;
+}
+
+/* Анимация фона 
 @keyframes gradientBG {
     10% {
         background-position: 0% 20%;
@@ -71,7 +71,7 @@ body {
         background-position: 20% 10%;
     }
     
-}
+}*/
 #quizContainer, #finalScore, #userForm {
     background: rgba(255, 255, 255, 0.7);
     backdrop-filter: blur(10px);

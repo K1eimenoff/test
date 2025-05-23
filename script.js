@@ -184,35 +184,76 @@ async function initMiniApp() {
     }
 }
 
-if (window.DeviceMotionEvent) {
-    let lastX = 0, lastY = 0;
-    const sensitivity = 30;
+// Проверяем поддержку DeviceMotion
+if (window.DeviceMotionEvent && typeof DeviceMotionEvent.requestPermission === 'function') {
+    // Для iOS 13+ нужно запрашивать разрешение
+    document.body.classList.add('no-sensor');
+    
+    const permissionBtn = document.createElement('button');
+    permissionBtn.textContent = 'Разрешить доступ к датчикам';
+    permissionBtn.className = 'btn';
+    permissionBtn.style.margin = '20px auto';
+    permissionBtn.style.display = 'block';
+    permissionBtn.onclick = () => {
+        DeviceMotionEvent.requestPermission()
+            .then(response => {
+                if (response === 'granted') {
+                    initMotionTracking();
+                    document.body.classList.remove('no-sensor');
+                    permissionBtn.remove();
+                }
+            })
+            .catch(console.error);
+    };
+    
+    document.querySelector('#userForm').appendChild(permissionBtn);
+} else if (window.DeviceMotionEvent) {
+    initMotionTracking();
+} else {
+    // Fallback для устройств без акселерометра
+    document.body.classList.add('no-sensor');
+}
+
+function initMotionTracking() {
     const liquidBg = document.querySelector('.liquid-bg');
+    let lastX = 0, lastY = 0;
+    const sensitivity = 15; // Уменьшенная чувствительность
+    const maxTilt = 20; // Максимальный наклон
+    
+    let rafId = null;
+    let targetX = 0, targetY = 0;
+    let currentX = 0, currentY = 0;
+    
+    function updatePosition() {
+        // Плавное следование за целью
+        currentX += (targetX - currentX) * 0.1;
+        currentY += (targetY - currentY) * 0.1;
+        
+        liquidBg.style.transform = `translate3d(${currentX}px, ${currentY}px, 0)`;
+        liquidBg.style.backgroundPosition = `${50 + currentX/10}% ${50 + currentY/10}%`;
+        
+        rafId = requestAnimationFrame(updatePosition);
+    }
+    
+    updatePosition();
     
     window.addEventListener('devicemotion', function(e) {
-        // Получаем данные акселерометра
-        const acceleration = e.accelerationIncludingGravity;
+        const acc = e.accelerationIncludingGravity;
+        if (!acc) return;
         
-        // Вычисляем изменение положения
-        const deltaX = (acceleration.x - lastX) * sensitivity;
-        const deltaY = (acceleration.y - lastY) * sensitivity;
-        
-        // Применяем трансформацию к фону
-        liquidBg.style.transform = `translate3d(${deltaX}px, ${deltaY}px, 0) rotate3d(${deltaX/100}, ${deltaY/100}, 0, ${Math.sqrt(deltaX*deltaX + deltaY*deltaY)/100}deg)`;
-        
-        // Обновляем последние значения
-        lastX = acceleration.x;
-        lastY = acceleration.y;
-        
-        // Анимируем градиент
-        const xPos = (deltaX / sensitivity) * 100;
-        const yPos = (deltaY / sensitivity) * 100;
-        liquidBg.style.backgroundPosition = `${50 + xPos}% ${50 + yPos}%`;
+        // Ограничиваем максимальный наклон
+        targetX = Math.max(-maxTilt, Math.min(maxTilt, -acc.x * sensitivity));
+        targetY = Math.max(-maxTilt, Math.min(maxTilt, acc.y * sensitivity));
     });
-} else {
-    console.log("Device Motion not supported");
-    // Fallback анимация
-    document.querySelector('.liquid-bg').style.animation = "gradientBG 25s ease infinite";
+    
+    // Остановка анимации при скрытии вкладки
+    document.addEventListener('visibilitychange', () => {
+        if (document.hidden) {
+            cancelAnimationFrame(rafId);
+        } else {
+            updatePosition();
+        }
+    });
 }
 
 // Инициализация при загрузке страницы

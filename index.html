@@ -12,16 +12,6 @@
 </head>
 
 <body> 
-    <div class="liquid-bg"></div>
-
-    <svg style="position:absolute;height:0;width:0;">
-    <filter id="liquid">
-    <feGaussianBlur in="SourceGraphic" stdDeviation="10" result="blur" />
-    <feColorMatrix in="blur" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 20 -10" result="liquid" />
-    <feComposite in="SourceGraphic" in2="liquid" operator="atop"/>
-    </filter>
-    </svg> 
-    
     <ul class="circles">
                 <li></li>
                 <li></li>
@@ -60,7 +50,15 @@
         <input type="text" id="phone" placeholder="Номер телефона" required>
         <button type="submit" class="btn">Отправить</button>
     </form>
+<div class="liquid-bg"></div>
 
+<svg style="position:absolute;height:0;width:0;">
+  <filter id="liquid" x="-20%" y="-20%" width="140%" height="140%">
+    <feGaussianBlur in="SourceGraphic" stdDeviation="8" result="blur" />
+    <feColorMatrix in="blur" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 18 -8" result="liquid" />
+    <feComposite in="SourceGraphic" in2="liquid" operator="atop"/>
+  </filter>
+</svg>
     <script src="script.js"></script>
     
 </body>
