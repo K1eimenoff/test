@@ -3,15 +3,24 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no">
     <title>Quiz</title>
     <link rel="icon" href="images/INTEKPROM.svg">
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style_new_ai.css">
     <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
     <script src="https://telegram.org/js/telegram-web-app.js?56"></script>
 </head>
 
-<body>  
+<body> 
+    <div class="liquid-bg"></div>
+
+    <svg style="position:absolute;height:0;width:0;">
+    <filter id="liquid">
+    <feGaussianBlur in="SourceGraphic" stdDeviation="10" result="blur" />
+    <feColorMatrix in="blur" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 20 -10" result="liquid" />
+    <feComposite in="SourceGraphic" in2="liquid" operator="atop"/>
+    </filter>
+    </svg> 
     
     <ul class="circles">
                 <li></li>
