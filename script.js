@@ -217,31 +217,6 @@ async function initMiniApp() {
     }
 }
 
-if (window.DeviceOrientationEvent && typeof window.DeviceOrientationEvent.requestPermission === 'function') {
-    // iOS
-    DeviceOrientationEvent.requestPermission()
-        .then(permissionState => {
-            if (permissionState === 'granted') {
-                window.addEventListener('deviceorientation', handleOrientation, true);
-            }
-        })
-        .catch(console.error);
-} else {
-    // Android и другие
-    window.addEventListener('deviceorientation', handleOrientation, true);
-}
-
-function handleOrientation(event) {
-    const x = event.gamma; // Left to right
-    const y = event.beta;  // Front to back
-
-    const bg = document.querySelector('.liquid-bg');
-    const moveX = (x / 90) * 10; // Максимум 10%
-    const moveY = (y / 90) * 10;
-
-    bg.style.transform = `translate(${moveX}%, ${moveY}%)`;
-}
-
 
 // Запуск приложения
 initMiniApp();
