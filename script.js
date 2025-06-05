@@ -72,6 +72,7 @@ function displayQuestion(question) {
     const currentQuestionElement = document.getElementById('currentQuestion');
     const totalQuestionsElement = document.getElementById('totalQuestions');
     const currentSection = document.getElementById('CurrentSection');
+    updateProgressBar();
 
     isAnswered = false;
     answerButtonsDiv.innerHTML = '';
@@ -210,13 +211,30 @@ async function initMiniApp() {
             startQuiz(selectedSection, questions);
         } else {
             document.getElementById('userForm').style.display = 'block';
+            document.getElementById('tableInfo').style.display = 'none';
             setupForm(questions);
         }
     } catch (e) {
         console.error("Ошибка при инициализации Mini App:", e);
     }
 }
-
+// Обновление прогресс-бара
+function updateProgressBar() {
+    const current = parseInt(document.getElementById('currentQuestion').textContent);
+    const total = parseInt(document.getElementById('totalQuestions').textContent);
+    const progressFill = document.getElementById('progressFill');
+    
+    // Рассчитываем процент выполнения
+    const percentage = (current / total) * 100;
+    
+    // Обновляем прогресс-бар
+    progressFill.style.width = `${percentage}%`;
+    
+    // Меняем цвет при завершении
+    if (current === total) {
+        progressFill.style.background = 'linear-gradient(90deg, #27ae60, #2ecc71)';
+    }
+}
 
 // Запуск приложения
 initMiniApp();
