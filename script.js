@@ -3,6 +3,7 @@ let score = 0;
 let filteredQuestions = [];
 let isAnswered = false;
 let currentShuffledOptions = [];
+let answerHistory = [];
 
 // Инициализация Telegram WebApp
 if (window.Telegram && window.Telegram.WebApp) {
@@ -72,7 +73,6 @@ function displayQuestion(question) {
     const currentQuestionElement = document.getElementById('currentQuestion');
     const totalQuestionsElement = document.getElementById('totalQuestions');
     const currentSection = document.getElementById('CurrentSection');
-    updateProgressBar();
 
     isAnswered = false;
     answerButtonsDiv.innerHTML = '';
@@ -107,6 +107,16 @@ function handleAnswerClick(event) {
 
     const selectedOriginalIndex = parseInt(selectedButton.dataset.originalIndex);
     const correctAnswer = filteredQuestions[currentQuestionIndex].correctAnswer;
+    const isCorrect = selectedOriginalIndex === correctAnswer;
+
+    // Записываем историю ответа
+    answerHistory.push({
+        question: filteredQuestions[currentQuestionIndex].question,
+        userAnswer: selectedOriginalIndex,
+        correctAnswer: correctAnswer,
+        isCorrect: isCorrect,
+        options: filteredQuestions[currentQuestionIndex].options.filter(opt => opt && opt.trim() !== "")
+    });
 
     document.querySelectorAll('.answer-button').forEach(btn => btn.classList.remove('selected'));
     selectedButton.classList.add('selected');
@@ -115,7 +125,7 @@ function handleAnswerClick(event) {
     const answerButtonsDiv = document.getElementById('answerButtons');
     answerButtonsDiv.removeEventListener('click', handleAnswerClick);
 
-    if (selectedOriginalIndex === correctAnswer) {
+    if (isCorrect) {
         score++;
     }
 
@@ -127,6 +137,7 @@ function handleAnswerClick(event) {
             endQuiz();
         }
     }, 2000);
+
 }
 
 // Завершение квиза
@@ -140,11 +151,14 @@ function endQuiz() {
     finalScore.style.display = 'block';
     scoreElement.textContent = score;
 
-    const sendData = JSON.stringify({ score, section: selectedSection });
+    const sendData = JSON.stringify({ 
+        score, 
+        section: selectedSection,
+        answerHistory: answerHistory 
+    });
 
     if (window.Telegram && window.Telegram.WebApp) {
         Telegram.WebApp.sendData(sendData);
-        // Telegram.WebApp.close(); — пусть бот решает, закрывать ли окно
     } else {
         console.log("Данные (тестовый режим):", sendData);
     }
@@ -158,6 +172,11 @@ async function startQuiz(selectedSection, questions) {
         if (window.Telegram && window.Telegram.WebApp) Telegram.WebApp.close();
         return;
     }
+
+    // Сбрасываем историю и счет при начале нового квиза
+    answerHistory = [];
+    score = 0;
+    currentQuestionIndex = 0;
 
     document.getElementById('quizContainer').style.display = 'block';
     displayQuestion(filteredQuestions[currentQuestionIndex]);
@@ -182,7 +201,7 @@ function setupForm(questions) {
             fio,
             company,
             phone,
-            sections: ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26"]
+            sections: ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26"]
         });
 
         if (window.Telegram && window.Telegram.WebApp) {
@@ -211,30 +230,13 @@ async function initMiniApp() {
             startQuiz(selectedSection, questions);
         } else {
             document.getElementById('userForm').style.display = 'block';
-            document.getElementById('tableInfo').style.display = 'none';
             setupForm(questions);
         }
     } catch (e) {
         console.error("Ошибка при инициализации Mini App:", e);
     }
 }
-// Обновление прогресс-бара
-function updateProgressBar() {
-    const current = parseInt(document.getElementById('currentQuestion').textContent);
-    const total = parseInt(document.getElementById('totalQuestions').textContent);
-    const progressFill = document.getElementById('progressFill');
-    
-    // Рассчитываем процент выполнения
-    const percentage = (current / total) * 100;
-    
-    // Обновляем прогресс-бар
-    progressFill.style.width = `${percentage}%`;
-    
-    // Меняем цвет при завершении
-    if (current === total) {
-        progressFill.style.background = 'linear-gradient(90deg, #27ae60, #2ecc71)';
-    }
-}
+
 
 // Запуск приложения
 initMiniApp();
