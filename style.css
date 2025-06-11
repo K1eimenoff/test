@@ -31,6 +31,21 @@ body {
     background: linear-gradient(135deg, #6e8efb, #a777e3);
     overflow: hidden;
 }
+.table-info {
+    display: none;
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: rgba(255, 255, 255, 0.8);
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-size: 14px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+#quizContainer.active ~ .table-info {
+    display: block;
+}
 
 .liquid-bg::before,
 .liquid-bg::after {
@@ -536,6 +551,90 @@ body {
         transform: translateY(-1000px) rotate(720deg);
         opacity: 0;
     }
+}
+/* Quiz header styles */
+.quiz-header {
+    margin-bottom: 20px;
+}
+
+.quiz-info {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 12px;
+    gap: 15px;
+}
+
+.info-item {
+    background: rgba(52, 152, 219, 0.1);
+    border-radius: 12px;
+    padding: 10px 15px;
+    flex: 1;
+    text-align: center;
+    border: 1px solid rgba(52, 152, 219, 0.2);
+}
+
+.info-label {
+    display: block;
+    font-size: 12px;
+    color: #7f8c8d;
+    margin-bottom: 4px;
+    font-weight: 500;
+}
+
+.info-value {
+    display: block;
+    font-size: 16px;
+    font-weight: 600;
+    color: #2c3e50;
+}
+.quiz-watermark {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) rotate(-15deg);
+    font-size: 120px;
+    font-weight: 800;
+    color: rgba(255, 255, 255, 0.08);
+    z-index: -1;
+    pointer-events: none;
+    user-select: none;
+    text-transform: uppercase;
+    letter-spacing: 5px;
+    white-space: nowrap;
+}
+
+/* Для мобильных устройств - уменьшаем размер */
+@media (max-width: 768px) {
+    .quiz-watermark {
+        font-size: 80px;
+    }
+}
+
+@media (max-width: 480px) {
+    .quiz-watermark {
+        font-size: 60px;
+    }
+}
+
+/* Progress bar styles */
+.progress-container {
+    width: 100%;
+    margin-top: 10px;
+}
+
+.progress-bar {
+    height: 6px;
+    background: #ecf0f1;
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    background: #3498db;
+    border-radius: 3px;
+    width: 0%;
+    transition: width 0.3s ease;
 }
 
 /* Остальные стили (контейнеры, кнопки, формы) остаются без изменений */

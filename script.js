@@ -73,7 +73,8 @@ function displayQuestion(question) {
     const currentQuestionElement = document.getElementById('currentQuestion');
     const totalQuestionsElement = document.getElementById('totalQuestions');
     const currentSection = document.getElementById('CurrentSection');
-
+const progressPercent = ((currentQuestionIndex + 1) / filteredQuestions.length) * 100;
+    document.getElementById('progressFill').style.width = `${progressPercent}%`;
     isAnswered = false;
     answerButtonsDiv.innerHTML = '';
     currentSection.textContent = question.section;
@@ -179,7 +180,9 @@ async function startQuiz(selectedSection, questions) {
     currentQuestionIndex = 0;
 
     document.getElementById('quizContainer').style.display = 'block';
+    document.getElementById('quizContainer').classList.add('active'); // Добавляем класс active
     displayQuestion(filteredQuestions[currentQuestionIndex]);
+    
 }
 
 // Обработка формы регистрации
