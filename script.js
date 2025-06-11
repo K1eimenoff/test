@@ -72,7 +72,7 @@ function displayQuestion(question) {
     const answerButtonsDiv = document.getElementById('answerButtons');
     const currentQuestionElement = document.getElementById('currentQuestion');
     const totalQuestionsElement = document.getElementById('totalQuestions');
-    const currentSection = document.getElementById('CurrentSection');
+    const currentSection = document.getElementById('CurrentSection').textContent = question.section || "-";
 const progressPercent = ((currentQuestionIndex + 1) / filteredQuestions.length) * 100;
     document.getElementById('progressFill').style.width = `${progressPercent}%`;
     isAnswered = false;
